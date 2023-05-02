@@ -1,0 +1,19 @@
+{
+  "name": "leo-api",
+  "version": "1.0.0",
+  "description": "Backend API for my second brain app.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hrycebilton/leo-api.git"
+  },
+  "author": "Bryce Hilton",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hrycebilton/leo-api/issues"
+  },
+  "homepage": "https://github.com/hrycebilton/leo-api#readme"
+}
