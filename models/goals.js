@@ -40,6 +40,10 @@ const Goal = sequelize.define('sb_goals', {
             model: 'sb_areas',
             key: 'id'
         }
+    },
+    belongsTo: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     }
 }, {
     sequelize,

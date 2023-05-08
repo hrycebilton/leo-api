@@ -52,6 +52,10 @@ const Task = sequelize.define('sb_task', {
         ),
         allowNull: true,
     },
+    belongsTo: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    }
 }, {
     tableName: 'sb_tasks',
     timestamps: false,

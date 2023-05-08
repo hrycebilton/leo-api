@@ -28,6 +28,10 @@ const Resource = sequelize.define('sb_resources', {
             key: 'id',
         },
     },
+    belongsTo: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    }
 }, {
     tableName: 'sb_resources',
     timestamps: false,

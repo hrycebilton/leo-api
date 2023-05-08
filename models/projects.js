@@ -59,6 +59,10 @@ const Project = sequelize.define('sb_projects', {
             model: 'sb_goals',
             key: 'id'
         }
+    },
+    belongsTo: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     }
 }, {
     sequelize,

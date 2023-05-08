@@ -56,6 +56,10 @@ const Note = sequelize.define('sb_notes', {
             model: 'sb_resources',
             key: 'id'
         }
+    },
+    belongsTo: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     }
 }, {
     sequelize,

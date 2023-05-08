@@ -21,10 +21,14 @@ const Area = sequelize.define('sb_areas', {
         type: DataTypes.STRING(255),
         allowNull: true
     },
-    creation_date: {
+    creationDate: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+    },
+    belongsTo: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     }
 }, {
     sequelize,
