@@ -1,5 +1,4 @@
 import express from 'express';
-import mysql from 'mysql2';
 import sequelize from './database.js';
 import Area from './models/areas.js';
 
