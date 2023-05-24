@@ -5,6 +5,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon index.js",
     "start": "node index.js"
   },
   "repository": {
@@ -18,9 +19,11 @@
   },
   "homepage": "https://github.com/hrycebilton/leo-api#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.18.2",
     "express-jwt": "^8.4.1",
     "express-jwt-authz": "^2.4.1",
+    "firebase-admin": "^11.8.0",
     "jwks-rsa": "^3.0.1",
     "mysql2": "^3.2.4",
     "sequelize": "^6.31.1"

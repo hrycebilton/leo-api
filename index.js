@@ -1,19 +1,20 @@
 import express from 'express';
 import sequelize from './database.js';
 import Area from './models/areas.js';
+import Middleware from './middleware/firebase/index.js';
+import cors from 'cors';
 
 const app = express();
 const port = process.env.PORT || 8080;
+const middleware = new Middleware();
 
 app.use(express.json());
-
-app.listen(port, () => {
-    console.log(`Leo API listening on port ${port}`);
-});
+app.use(cors());
+//app.use(middleware.decodeToken.bind(middleware));
 
 //#region Areas
 // Define a GET route to retrieve all areas
-app.get('/areas', async (req, res) => {
+app.get('/api/areas', async (req, res) => {
     try {
         const areas = await Area.findAll();
         res.json(areas);
@@ -25,10 +26,10 @@ app.get('/areas', async (req, res) => {
 });
 
 // Define a POST route to create a new area
-app.post('/areas', async (req, res) => {
+app.post('/api/areas', async (req, res) => {
     try {
-        const { name, description, image } = req.body;
-        const area = await Area.create({ name, description, image });
+        const { name, description, image, belongs_to } = req.body;
+        const area = await Area.create({ name, description, image, belongs_to });
         res.status(201).json(area);
     } catch (error) {
         console.error(error);
@@ -37,7 +38,7 @@ app.post('/areas', async (req, res) => {
 });
 
 //Define a GET route to retrieve a specific area
-app.get('/areas/:id', async (req, res) => {
+app.get('/api/areas/:id', async (req, res) => {
     try {
         const area = await Area.findOne({ where: { id: req.params.id } });
         if (!area) {
@@ -51,7 +52,7 @@ app.get('/areas/:id', async (req, res) => {
 });
 
 //Define a PUT route to update a specific area
-app.put('/areas/:id', async (req, res) => {
+app.put('/api/areas/:id', async (req, res) => {
     try {
         const area = await Area.findOne({ where: { id: req.params.id } });
 
@@ -68,7 +69,7 @@ app.put('/areas/:id', async (req, res) => {
 });
 
 //Define a DELETE route to remove a specific area
-app.delete('/areas/:id', async (req, res) => {
+app.delete('/api/areas/:id', async (req, res) => {
     try {
         const area = await Area.findOne({ where: { id: req.params.id } });
         if (!area) {
@@ -98,3 +99,7 @@ app.delete('/areas/:id', async (req, res) => {
 
 //#region Tasks
 //#endregion
+
+app.listen(port, () => {
+    console.log(`Leo API listening on port ${port}`);
+});
