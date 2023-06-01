@@ -1,6 +1,7 @@
 import express from 'express';
 import sequelize from './database.js';
 import Area from './models/areas.js';
+import Project from './models/projects.js';
 import Middleware from './middleware/firebase/index.js';
 import cors from 'cors';
 
@@ -10,7 +11,7 @@ const middleware = new Middleware();
 
 app.use(express.json());
 app.use(cors());
-//app.use(middleware.decodeToken.bind(middleware));
+app.use(middleware.decodeToken.bind(middleware));
 
 //#region Areas
 // Define a GET route to retrieve all areas
@@ -92,6 +93,17 @@ app.delete('/api/areas/:id', async (req, res) => {
 //#endregion
 
 //#region Projects
+// Define a GET route to retrieve all projects
+app.get('/api/projects', async (req, res) => {
+    try {
+        const projects = await Project.findAll();
+        res.json(projects);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Internal server error');
+    }
+});
 //#endregion
 
 //#region Resources
