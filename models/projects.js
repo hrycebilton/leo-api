@@ -16,11 +16,11 @@ const Project = sequelize.define('sb_projects', {
         type: DataTypes.STRING(255),
         allowNull: true
     },
-    startDate: {
+    start_date: {
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: true
     },
-    endDate: {
+    end_date: {
         type: DataTypes.DATE,
         allowNull: true
     },
@@ -29,12 +29,12 @@ const Project = sequelize.define('sb_projects', {
         allowNull: false,
         defaultValue: 'not started'
     },
-    creationDate: {
+    creation_date: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
     },
-    lastUpdated: {
+    last_updated: {
         type: DataTypes.DATE,
         allowNull: true
     },
@@ -42,7 +42,7 @@ const Project = sequelize.define('sb_projects', {
         type: DataTypes.ENUM('low', 'medium', 'high'),
         allowNull: false
     },
-    areaId: {
+    area_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -52,7 +52,7 @@ const Project = sequelize.define('sb_projects', {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
     },
-    goalId: {
+    goal_id: {
         type: DataTypes.INTEGER,
         allowNull: true,
         references: {
@@ -60,8 +60,8 @@ const Project = sequelize.define('sb_projects', {
             key: 'id'
         }
     },
-    belongsTo: {
-        type: DataTypes.INTEGER,
+    belongs_to: {
+        type: DataTypes.STRING(50),
         allowNull: false
     }
 }, {
