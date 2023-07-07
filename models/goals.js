@@ -16,16 +16,16 @@ const Goal = sequelize.define('sb_goals', {
         type: DataTypes.STRING(255),
         allowNull: true
     },
-    dueDate: {
+    due_date: {
         type: DataTypes.DATE,
         allowNull: true
     },
-    creationDate: {
+    creation_date: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
     },
-    lastUpdated: {
+    last_updated: {
         type: DataTypes.DATE,
         allowNull: true,
     },
@@ -33,7 +33,7 @@ const Goal = sequelize.define('sb_goals', {
         type: DataTypes.ENUM('low', 'medium', 'high'),
         allowNull: true
     },
-    areaId: {
+    area_id: {
         type: DataTypes.INTEGER,
         allowNull: true,
         references: {
@@ -41,8 +41,8 @@ const Goal = sequelize.define('sb_goals', {
             key: 'id'
         }
     },
-    belongsTo: {
-        type: DataTypes.INTEGER,
+    belongs_to: {
+        type: DataTypes.STRING(50),
         allowNull: false
     }
 }, {

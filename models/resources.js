@@ -1,5 +1,5 @@
-import { Sequelize, DataTypes } from "sequelize";
-const sequelize = new Sequelize('sqlite::memory:');
+import { DataTypes } from "sequelize";
+import sequelize from "../database.js";
 
 const Resource = sequelize.define('sb_resources', {
     id: {
@@ -28,11 +28,13 @@ const Resource = sequelize.define('sb_resources', {
             key: 'id',
         },
     },
-    belongsTo: {
-        type: DataTypes.INTEGER,
+    belongs_to: {
+        type: DataTypes.STRING(50),
         allowNull: false
     }
 }, {
     tableName: 'sb_resources',
     timestamps: false,
 });
+
+export default Resource;

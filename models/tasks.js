@@ -1,5 +1,5 @@
-import { Sequelize, DataTypes } from "sequelize";
-const sequelize = new Sequelize('sqlite::memory:');
+import { DataTypes } from "sequelize";
+import sequelize from "../database.js";
 
 const Task = sequelize.define('sb_task', {
     id: {
@@ -53,7 +53,7 @@ const Task = sequelize.define('sb_task', {
         allowNull: true,
     },
     belongsTo: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING(50),
         allowNull: false
     }
 }, {
@@ -61,10 +61,11 @@ const Task = sequelize.define('sb_task', {
     timestamps: false,
 });
 
-
 Task.belongsTo(Project, {
     foreignKey: {
         allowNull: true,
         name: 'project_id'
     }
 });
+
+export default Task;

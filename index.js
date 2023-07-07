@@ -11,7 +11,7 @@ const middleware = new Middleware();
 
 app.use(express.json());
 app.use(cors());
-app.use(middleware.decodeToken.bind(middleware));
+//app.use(middleware.decodeToken.bind(middleware));
 
 //#region Areas
 // Define a GET route to retrieve all areas
@@ -100,6 +100,18 @@ app.get('/api/projects', async (req, res) => {
         res.json(projects);
     }
     catch (error) {
+        console.error(error);
+        res.status(500).send('Internal server error');
+    }
+});
+
+// Define a POST route to create a new project
+app.post('/api/projects', async (req, res) => {
+    try {
+        const { name, description, start_date, end_date, status, last_updated, priority, area_id, goal_id, image, belongs_to } = req.body;
+        const project = await Project.create({ name, description, start_date, end_date, status, last_updated, priority, area_id, goal_id, image, belongs_to });
+        res.status(201).json(project);
+    } catch (error) {
         console.error(error);
         res.status(500).send('Internal server error');
     }

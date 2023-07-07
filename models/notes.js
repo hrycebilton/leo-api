@@ -1,5 +1,5 @@
 import { Sequelize, DataTypes } from "sequelize";
-const sequelize = new Sequelize('sqlite::memory:');
+import sequelize from "../database.js";
 
 const Note = sequelize.define('sb_notes', {
     id: {
@@ -57,8 +57,8 @@ const Note = sequelize.define('sb_notes', {
             key: 'id'
         }
     },
-    belongsTo: {
-        type: DataTypes.INTEGER,
+    belongs_to: {
+        type: DataTypes.STRING(50),
         allowNull: false
     }
 }, {
@@ -71,3 +71,5 @@ const Note = sequelize.define('sb_notes', {
 Note.belongsTo(Project, { foreignKey: 'project_id' });
 Note.belongsTo(Area, { foreignKey: 'area_id' });
 Note.belongsTo(Resource, { foreignKey: 'resource_id' });
+
+export default Note;
