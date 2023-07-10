@@ -52,6 +52,10 @@ const Task = sequelize.define('sb_task', {
         ),
         allowNull: true,
     },
+    is_finished: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
     belongsTo: {
         type: DataTypes.STRING(50),
         allowNull: false
