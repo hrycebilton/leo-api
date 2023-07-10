@@ -2,6 +2,7 @@ import express from 'express';
 import sequelize from './database.js';
 import Area from './models/areas.js';
 import Project from './models/projects.js';
+import Task from './models/tasks.js'
 import Middleware from './middleware/firebase/index.js';
 import cors from 'cors';
 
@@ -122,6 +123,21 @@ app.post('/api/projects', async (req, res) => {
 //#endregion
 
 //#region Tasks
+// Define a GET route to retrieve all tasks within a project
+app.get('/api/projects/:id/tasks', async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        // Retrieve tasks associated with the specified project ID
+        const tasks = await Task.findAll({ where: { id } });
+
+        res.json(tasks);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Internal server error');
+    }
+});
 //#endregion
 
 app.listen(port, () => {
