@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../database.js";
+import Project from "./projects.js";
 
 const Task = sequelize.define('sb_task', {
     id: {
@@ -56,7 +57,7 @@ const Task = sequelize.define('sb_task', {
         type: DataTypes.BOOLEAN,
         defaultValue: false
     },
-    belongsTo: {
+    belongs_to: {
         type: DataTypes.STRING(50),
         allowNull: false
     }
