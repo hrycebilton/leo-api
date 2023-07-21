@@ -2,6 +2,7 @@ import express from 'express';
 import sequelize from './database.js';
 import Area from './models/areas.js';
 import Project from './models/projects.js';
+import Resource from './models/resources.js';
 import Task from './models/tasks.js'
 import Middleware from './middleware/firebase/index.js';
 import cors from 'cors';
@@ -106,6 +107,21 @@ app.get('/api/projects', async (req, res) => {
     }
 });
 
+// Define a GET route to retrieve all projects within a specific area
+app.get('/api/areas/:areaId/projects', async (req, res) => {
+    try {
+        const areaId = req.params.areaId;
+
+        // Query the projects based on the specified area ID
+        const projects = await Project.findAll({ where: { area_id: areaId } });
+
+        res.json(projects);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal server error');
+    }
+});
+
 // Define a POST route to create a new project
 app.post('/api/projects', async (req, res) => {
     try {
@@ -120,6 +136,32 @@ app.post('/api/projects', async (req, res) => {
 //#endregion
 
 //#region Resources
+// Define a GET route to retrieve all resources
+app.get('/api/resources', async (req, res) => {
+    try {
+        const resources = await Resource.findAll();
+        res.json(resources);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Internal server error');
+    }
+});
+
+// Define a GET route to retrieve all resources within a specific area
+app.get('/api/areas/:areaId/resources', async (req, res) => {
+    try {
+        const areaId = req.params.areaId;
+
+        // Query the resources based on the specified area ID
+        const resources = await Resource.findAll({ where: { area_id: areaId } });
+
+        res.json(resources);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal server error');
+    }
+});
 //#endregion
 
 //#region Tasks
