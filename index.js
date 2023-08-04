@@ -165,6 +165,30 @@ app.get('/api/areas/:areaId/resources', async (req, res) => {
 //#endregion
 
 //#region Tasks
+// Define a GET route to retrieve all tasks
+app.get('/api/tasks', async (req, res) => {
+    try {
+        const tasks = await Task.findAll();
+        res.json(tasks);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Internal server error');
+    }
+});
+
+// Define a POST route to create a new task
+app.post('/api/tasks', async (req, res) => {
+    try {
+        const { name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, belongs_to } = req.body;
+        const task = await Task.create({ name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, belongs_to });
+        res.status(201).json(task);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal server error');
+    }
+});
+
 // Define a GET route to retrieve all tasks within a project
 app.get('/api/projects/:id/tasks', async (req, res) => {
     try {
