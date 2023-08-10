@@ -1,5 +1,5 @@
 import express from 'express';
-import sequelize from './database.js';
+import sequelize from './database.js'; //required
 import Area from './models/areas.js';
 import Project from './models/projects.js';
 import Resource from './models/resources.js';
