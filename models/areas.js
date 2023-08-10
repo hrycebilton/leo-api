@@ -26,6 +26,10 @@ const Area = sequelize.define('sb_areas', {
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
     },
+    is_favorited: {
+        type: DataTypes.TINYINT,
+        defaultValue: 0,
+    },
     belongs_to: {
         type: DataTypes.STRING(50),
         allowNull: false
