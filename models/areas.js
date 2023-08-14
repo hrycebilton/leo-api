@@ -19,7 +19,7 @@ const Area = sequelize.define('sb_areas', {
     },
     image: {
         type: DataTypes.STRING(255),
-        allowNull: true
+        allowNull: false
     },
     creation_date: {
         type: DataTypes.DATE,

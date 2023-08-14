@@ -1,5 +1,6 @@
 import { Sequelize, DataTypes } from "sequelize";
 import sequelize from "../database.js";
+import Area from './areas.js';
 
 const Goal = sequelize.define('sb_goals', {
     id: {
