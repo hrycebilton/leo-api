@@ -16,6 +16,10 @@ const Project = sequelize.define('sb_projects', {
         type: DataTypes.STRING(255),
         allowNull: true
     },
+    image: {
+        type: DataTypes.STRING(255),
+        allowNull: false
+    },
     start_date: {
         type: DataTypes.DATE,
         allowNull: true

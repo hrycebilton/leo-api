@@ -1,6 +1,7 @@
 import express from 'express';
 import sequelize from './database.js'; //required
 import Area from './models/areas.js';
+import Goal from './models/goals.js';
 import Project from './models/projects.js';
 import Resource from './models/resources.js';
 import Task from './models/tasks.js'
@@ -89,6 +90,48 @@ app.delete('/api/areas/:id', async (req, res) => {
 //#endregion
 
 //#region Goals
+// Define a POST route to create a new goal
+app.post('/api/goals', async (req, res) => {
+    try {
+        const { name, description, due_date, last_updated, priority, area_id, belongs_to } = req.body;
+        const goal = await Goal.create({ name, description, due_date, last_updated, priority, area_id, belongs_to });
+        res.status(201).json(goal);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal server error');
+    }
+});
+
+// Define a GET route to retrieve all goals within a specific area
+app.get('/api/areas/:areaId/goals', async (req, res) => {
+    try {
+        const areaId = req.params.areaId;
+
+        // Query the projects based on the specified area ID
+        const goals = await Goal.findAll({ where: { area_id: areaId } });
+
+        res.json(goals);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal server error');
+    }
+});
+
+//Define a DELETE route to remove a specific goal
+app.delete('/api/goals/:id', async (req, res) => {
+    try {
+        const goal = await Goal.findOne({ where: { id: req.params.id } });
+        if (!goal) {
+            return res.status(404).json({ error: 'Goal not found' });
+        }
+        await goal.destroy();
+        res.sendStatus(204);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 //#endregion
 
 //#region Notes
@@ -125,12 +168,28 @@ app.get('/api/areas/:areaId/projects', async (req, res) => {
 // Define a POST route to create a new project
 app.post('/api/projects', async (req, res) => {
     try {
-        const { name, description, start_date, end_date, status, last_updated, priority, area_id, goal_id, image, belongs_to } = req.body;
-        const project = await Project.create({ name, description, start_date, end_date, status, last_updated, priority, area_id, goal_id, image, belongs_to });
+        const { name, description, image, start_date, end_date, status, last_updated, priority, area_id, goal_id, belongs_to } = req.body;
+        const project = await Project.create({ name, description, image, start_date, end_date, status, last_updated, priority, area_id, goal_id, belongs_to });
         res.status(201).json(project);
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal server error');
+    }
+});
+
+//Define a DELETE route to remove a specific project
+app.delete('/api/projects/:id', async (req, res) => {
+    try {
+        const project = await Project.findOne({ where: { id: req.params.id } });
+        if (!project) {
+            return res.status(404).json({ error: 'Project not found' });
+        }
+        await project.destroy();
+        res.sendStatus(204);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 //#endregion
