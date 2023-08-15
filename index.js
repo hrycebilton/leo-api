@@ -93,8 +93,8 @@ app.delete('/api/areas/:id', async (req, res) => {
 // Define a POST route to create a new goal
 app.post('/api/goals', async (req, res) => {
     try {
-        const { name, description, due_date, last_updated, priority, area_id, belongs_to } = req.body;
-        const goal = await Goal.create({ name, description, due_date, last_updated, priority, area_id, belongs_to });
+        const { name, description, image, due_date, last_updated, priority, area_id, belongs_to } = req.body;
+        const goal = await Goal.create({ name, description, image, due_date, last_updated, priority, area_id, belongs_to });
         res.status(201).json(goal);
     } catch (error) {
         console.error(error);
@@ -239,8 +239,8 @@ app.get('/api/tasks', async (req, res) => {
 // Define a POST route to create a new task
 app.post('/api/tasks', async (req, res) => {
     try {
-        const { name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, belongs_to } = req.body;
-        const task = await Task.create({ name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, belongs_to });
+        const { name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, belongs_to } = req.body;
+        const task = await Task.create({ name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, belongs_to });
         res.status(201).json(task);
     } catch (error) {
         console.error(error);
