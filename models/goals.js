@@ -17,6 +17,10 @@ const Goal = sequelize.define('sb_goals', {
         type: DataTypes.STRING(255),
         allowNull: true
     },
+    image: {
+        type: DataTypes.STRING(255),
+        allowNull: false
+    },
     due_date: {
         type: DataTypes.DATE,
         allowNull: true

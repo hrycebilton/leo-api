@@ -29,7 +29,7 @@ const Note = sequelize.define('sb_notes', {
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
     },
-    last_modified_date: {
+    last_updated: {
         type: DataTypes.DATE,
         allowNull: true
     },

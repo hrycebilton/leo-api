@@ -57,6 +57,22 @@ const Task = sequelize.define('sb_task', {
         type: DataTypes.BOOLEAN,
         defaultValue: false
     },
+    project_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: 'sb_projects',
+            key: 'id'
+        }
+    },
+    goal_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: 'sb_goals',
+            key: 'id'
+        }
+    },
     belongs_to: {
         type: DataTypes.STRING(50),
         allowNull: false
