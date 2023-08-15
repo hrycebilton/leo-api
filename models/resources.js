@@ -3,7 +3,7 @@ import sequelize from "../database.js";
 import Area from "./areas.js";
 
 
-const Resource = sequelize.define('sb_resources', {
+const Resource = sequelize.define("sb_resources", {
     id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -27,7 +27,7 @@ const Resource = sequelize.define('sb_resources', {
         allowNull: true,
         references: {
             model: Area,
-            key: 'id',
+            key: "id",
         },
     },
     belongs_to: {
@@ -35,7 +35,7 @@ const Resource = sequelize.define('sb_resources', {
         allowNull: false
     }
 }, {
-    tableName: 'sb_resources',
+    tableName: "sb_resources",
     timestamps: false,
 });
 

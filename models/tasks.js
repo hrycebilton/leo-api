@@ -2,7 +2,7 @@ import { DataTypes } from "sequelize";
 import sequelize from "../database.js";
 import Project from "./projects.js";
 
-const Task = sequelize.define('sb_task', {
+const Task = sequelize.define("sb_task", {
     id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -26,30 +26,30 @@ const Task = sequelize.define('sb_task', {
         allowNull: true,
     },
     priority: {
-        type: DataTypes.ENUM('low', 'medium', 'high'),
+        type: DataTypes.ENUM("low", "medium", "high"),
         allowNull: true,
     },
     recurrence: {
         type: DataTypes.ENUM(
-            'daily',
-            'monthly',
-            'yearly',
-            'weekly',
-            'monthly last day',
-            'monthly first day of week',
-            'monthly last day of week',
+            "daily",
+            "monthly",
+            "yearly",
+            "weekly",
+            "monthly last day",
+            "monthly first day of week",
+            "monthly last day of week",
         ),
         allowNull: true,
     },
     recurrence_unit: {
         type: DataTypes.ENUM(
-            'monday',
-            'tuesday',
-            'wednesday',
-            'thursday',
-            'friday',
-            'saturday',
-            'sunday',
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "sunday",
         ),
         allowNull: true,
     },
@@ -61,16 +61,16 @@ const Task = sequelize.define('sb_task', {
         type: DataTypes.INTEGER,
         allowNull: true,
         references: {
-            model: 'sb_projects',
-            key: 'id'
+            model: "sb_projects",
+            key: "id"
         }
     },
     goal_id: {
         type: DataTypes.INTEGER,
         allowNull: true,
         references: {
-            model: 'sb_goals',
-            key: 'id'
+            model: "sb_goals",
+            key: "id"
         }
     },
     belongs_to: {
@@ -78,14 +78,14 @@ const Task = sequelize.define('sb_task', {
         allowNull: false
     }
 }, {
-    tableName: 'sb_tasks',
+    tableName: "sb_tasks",
     timestamps: false,
 });
 
 Task.belongsTo(Project, {
     foreignKey: {
         allowNull: true,
-        name: 'project_id'
+        name: "project_id"
     }
 });
 
