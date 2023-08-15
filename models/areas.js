@@ -1,7 +1,7 @@
 import { Sequelize, DataTypes } from "sequelize";
 import sequelize from "../database.js";
 
-const Area = sequelize.define('sb_areas', {
+const Area = sequelize.define("sb_areas", {
     id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -24,7 +24,7 @@ const Area = sequelize.define('sb_areas', {
     creation_date: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
     },
     is_favorited: {
         type: DataTypes.TINYINT,
@@ -36,8 +36,8 @@ const Area = sequelize.define('sb_areas', {
     }
 }, {
     sequelize,
-    modelName: 'Area',
-    tableName: 'sb_areas',
+    modelName: "Area",
+    tableName: "sb_areas",
     timestamps: false
 });
 

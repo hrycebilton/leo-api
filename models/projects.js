@@ -1,7 +1,7 @@
 import { Sequelize, DataTypes } from "sequelize";
 import sequelize from "../database.js";
 
-const Project = sequelize.define('sb_projects', {
+const Project = sequelize.define("sb_projects", {
     id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -29,39 +29,39 @@ const Project = sequelize.define('sb_projects', {
         allowNull: true
     },
     status: {
-        type: DataTypes.ENUM('not started', 'on hold', 'in progress', 'completed'),
+        type: DataTypes.ENUM("not started", "on hold", "in progress", "completed"),
         allowNull: false,
-        defaultValue: 'not started'
+        defaultValue: "not started"
     },
     creation_date: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
     },
     last_updated: {
         type: DataTypes.DATE,
         allowNull: true
     },
     priority: {
-        type: DataTypes.ENUM('low', 'medium', 'high'),
+        type: DataTypes.ENUM("low", "medium", "high"),
         allowNull: false
     },
     area_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'sb_areas',
-            key: 'id'
+            model: "sb_areas",
+            key: "id"
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
     },
     goal_id: {
         type: DataTypes.INTEGER,
         allowNull: true,
         references: {
-            model: 'sb_goals',
-            key: 'id'
+            model: "sb_goals",
+            key: "id"
         }
     },
     belongs_to: {
@@ -71,7 +71,7 @@ const Project = sequelize.define('sb_projects', {
 }, {
     sequelize,
     timestamps: false,
-    tableName: 'sb_projects'
+    tableName: "sb_projects"
 });
 
 export default Project;

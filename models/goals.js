@@ -1,8 +1,8 @@
 import { Sequelize, DataTypes } from "sequelize";
 import sequelize from "../database.js";
-import Area from './areas.js';
+import Area from "./areas.js";
 
-const Goal = sequelize.define('sb_goals', {
+const Goal = sequelize.define("sb_goals", {
     id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -28,22 +28,22 @@ const Goal = sequelize.define('sb_goals', {
     creation_date: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
     },
     last_updated: {
         type: DataTypes.DATE,
         allowNull: true,
     },
     priority: {
-        type: DataTypes.ENUM('low', 'medium', 'high'),
+        type: DataTypes.ENUM("low", "medium", "high"),
         allowNull: true
     },
     area_id: {
         type: DataTypes.INTEGER,
         allowNull: true,
         references: {
-            model: 'sb_areas',
-            key: 'id'
+            model: "sb_areas",
+            key: "id"
         }
     },
     belongs_to: {
@@ -52,11 +52,11 @@ const Goal = sequelize.define('sb_goals', {
     }
 }, {
     sequelize,
-    modelName: 'Goal',
-    tableName: 'sb_goals',
+    modelName: "Goal",
+    tableName: "sb_goals",
     timestamps: false
 });
 
-Goal.belongsTo(Area, { foreignKey: 'area_id' });
+Goal.belongsTo(Area, { foreignKey: "area_id" });
 
 export default Goal;
