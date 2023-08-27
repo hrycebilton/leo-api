@@ -165,6 +165,20 @@ app.get("/api/areas/:areaId/projects", async (req, res) => {
     }
 });
 
+//Define a GET route to retrieve a specific project
+app.get("/api/projects/:id", async (req, res) => {
+    try {
+        const project = await Project.findOne({ where: { id: req.params.id } });
+        if (!project) {
+            return res.status(404).json({ error: "Project not found" });
+        }
+        res.json(project);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 // Define a POST route to create a new project
 app.post("/api/projects", async (req, res) => {
     try {
@@ -236,18 +250,6 @@ app.get("/api/tasks", async (req, res) => {
     }
 });
 
-// Define a POST route to create a new task
-app.post("/api/tasks", async (req, res) => {
-    try {
-        const { name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, belongs_to } = req.body;
-        const task = await Task.create({ name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, belongs_to });
-        res.status(201).json(task);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Internal server error");
-    }
-});
-
 // Define a GET route to retrieve all tasks within a project
 app.get("/api/projects/:id/tasks", async (req, res) => {
     try {
@@ -261,6 +263,51 @@ app.get("/api/projects/:id/tasks", async (req, res) => {
     catch (error) {
         console.error(error);
         res.status(500).send("Internal server error");
+    }
+});
+
+// Define a POST route to create a new task
+app.post("/api/tasks", async (req, res) => {
+    try {
+        const { name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, belongs_to } = req.body;
+        const task = await Task.create({ name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, belongs_to });
+        res.status(201).json(task);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
+    }
+});
+
+//Define a PUT route to update a specific task
+app.put("/api/tasks/:id", async (req, res) => {
+    try {
+        const task = await Task.findOne({ where: { id: req.params.id } });
+
+        if (!task) {
+            return res.status(404).json({ error: "Task not found" });
+        }
+
+        const updatedTask = await task.update(req.body);
+        res.json(updatedTask);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+//Define a DELETE route to remove a specific task
+app.delete("/api/tasks/:id", async (req, res) => {
+    try {
+        const task = await Task.findOne({ where: { id: req.params.id } });
+        if (!task) {
+            return res.status(404).json({ error: "Task not found" });
+        }
+        await task.destroy();
+        res.sendStatus(204);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 //#endregion

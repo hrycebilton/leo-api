@@ -1,4 +1,4 @@
-import { DataTypes } from "sequelize";
+import { Sequelize, DataTypes } from "sequelize";
 import sequelize from "../database.js";
 import Project from "./projects.js";
 
@@ -16,6 +16,11 @@ const Task = sequelize.define("sb_task", {
     description: {
         type: DataTypes.STRING(255),
         allowNull: true,
+    },
+    creation_date: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
     },
     start_date: {
         type: DataTypes.DATE,
