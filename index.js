@@ -1,12 +1,13 @@
+import cors from "cors";
 import express from "express";
 import sequelize from "./database.js"; //required
 import Area from "./models/areas.js";
 import Goal from "./models/goals.js";
+import Note from "./models/notes.js";
 import Project from "./models/projects.js";
 import Resource from "./models/resources.js";
 import Task from "./models/tasks.js"
 import Middleware from "./middleware/firebase/index.js";
-import cors from "cors";
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -76,9 +77,11 @@ app.put("/api/areas/:id", async (req, res) => {
 app.delete("/api/areas/:id", async (req, res) => {
     try {
         const area = await Area.findOne({ where: { id: req.params.id } });
+
         if (!area) {
             return res.status(404).json({ error: "Area not found" });
         }
+
         await area.destroy();
         res.sendStatus(204);
 
@@ -93,8 +96,19 @@ app.delete("/api/areas/:id", async (req, res) => {
 // Define a POST route to create a new goal
 app.post("/api/goals", async (req, res) => {
     try {
-        const { name, description, image, due_date, last_updated, priority, area_id, belongs_to } = req.body;
-        const goal = await Goal.create({ name, description, image, due_date, last_updated, priority, area_id, belongs_to });
+        const { name, description, due_date, last_updated, priority, area_id, belongs_to } = req.body;
+        const goal = await Goal.create({ name, description, due_date, last_updated, priority, area_id, belongs_to });
+        res.status(201).json(goal);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
+    }
+});
+
+// Define a GET route to retrieve all goals
+app.get("/api/goals", async (req, res) => {
+    try {
+        const goal = await Goal.findAll();
         res.status(201).json(goal);
     } catch (error) {
         console.error(error);
@@ -135,6 +149,76 @@ app.delete("/api/goals/:id", async (req, res) => {
 //#endregion
 
 //#region Notes
+// Define a GET route to retrieve all notes
+app.get("/api/notes", async (req, res) => {
+    try {
+        const notes = await Note.findAll();
+        res.json(notes);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
+    }
+});
+
+// Define a GET route to retrieve all notes within a specific area
+app.get("/api/areas/:areaId/notes", async (req, res) => {
+    try {
+        const areaId = req.params.areaId;
+
+        // Query the notes based on the specified area ID
+        const notes = await Note.findAll({ where: { area_id: areaId } });
+
+        res.json(notes);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
+    }
+});
+
+// Define a GET route to retrieve all notes within a specific project
+app.get("/api/projects/:projectId/notes", async (req, res) => {
+    try {
+        const projectId = req.params.projectId;
+
+        // Query the notes based on the specified area ID
+        const notes = await Note.findAll({ where: { project_id: projectId } });
+
+        res.json(notes);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
+    }
+});
+
+// Define a POST route to create a new note
+app.post("/api/notes", async (req, res) => {
+    try {
+        const { title, type, content, source, last_updated, project_id, area_id, resource_id, belongs_to } = req.body;
+        const note = await Note.create({ title, type, content, source, last_updated, project_id, area_id, resource_id, belongs_to });
+        res.status(201).json(note);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
+    }
+});
+
+//Define a PUT route to update a specific note
+app.put("/api/notes/:id", async (req, res) => {
+    try {
+        const note = await Note.findOne({ where: { id: req.params.id } });
+
+        if (!note) {
+            return res.status(404).json({ error: "Note not found" });
+        }
+
+        const updatedNote = await note.update(req.body);
+        res.json(updatedNote);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
 //#endregion
 
 //#region Projects
@@ -191,6 +275,23 @@ app.post("/api/projects", async (req, res) => {
     }
 });
 
+//Define a PUT route to update a specific project
+app.put("/api/projects/:id", async (req, res) => {
+    try {
+        const project = await Project.findOne({ where: { id: req.params.id } });
+
+        if (!project) {
+            return res.status(404).json({ error: "Project not found" });
+        }
+
+        const updatedProject = await project.update(req.body);
+        res.json(updatedProject);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 //Define a DELETE route to remove a specific project
 app.delete("/api/projects/:id", async (req, res) => {
     try {
@@ -235,6 +336,18 @@ app.get("/api/areas/:areaId/resources", async (req, res) => {
         res.status(500).send("Internal server error");
     }
 });
+
+// Define a POST route to create a new area
+app.post("/api/resources", async (req, res) => {
+    try {
+        const { name, description, image, area_id, belongs_to } = req.body;
+        const resource = await Resource.create({ name, description, image, area_id, belongs_to });
+        res.status(201).json(resource);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
+    }
+});
 //#endregion
 
 //#region Tasks
@@ -269,8 +382,8 @@ app.get("/api/projects/:id/tasks", async (req, res) => {
 // Define a POST route to create a new task
 app.post("/api/tasks", async (req, res) => {
     try {
-        const { name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, belongs_to } = req.body;
-        const task = await Task.create({ name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, belongs_to });
+        const { name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, belongs_to } = req.body;
+        const task = await Task.create({ name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, belongs_to });
         res.status(201).json(task);
     } catch (error) {
         console.error(error);

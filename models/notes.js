@@ -1,5 +1,8 @@
 import { Sequelize, DataTypes } from "sequelize";
 import sequelize from "../database.js";
+import Area from "./areas.js";
+import Project from "./projects.js";
+import Resource from "./resources.js";
 
 const Note = sequelize.define("sb_notes", {
     id: {
