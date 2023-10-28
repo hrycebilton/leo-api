@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/hrycebilton/leo-api#readme",
   "dependencies": {
+    "bree": "^9.1.3",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "express-jwt": "^8.4.1",

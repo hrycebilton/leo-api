@@ -78,6 +78,10 @@ const Task = sequelize.define("sb_task", {
             key: "id"
         }
     },
+    original_task_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
     belongs_to: {
         type: DataTypes.STRING(50),
         allowNull: false

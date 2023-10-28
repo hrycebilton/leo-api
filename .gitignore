@@ -16,3 +16,4 @@ yarn.lock
 .DS_Store
 Thumbs.db
 serviceAccount.json
+database.js

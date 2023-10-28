@@ -1,3 +1,4 @@
+import Bree from "bree";
 import cors from "cors";
 import express from "express";
 import sequelize from "./database.js"; //required
@@ -12,6 +13,17 @@ import Middleware from "./middleware/firebase/index.js";
 const app = express();
 const port = process.env.PORT || 8080;
 const middleware = new Middleware();
+
+const bree = new Bree({
+    jobs: [
+        {
+            name: 'recurring-task',
+            interval: 'at 12:00am',
+            timeout: '6s',
+            runOnInit: true,
+        }
+    ]
+});
 
 app.use(express.json());
 app.use(cors());
@@ -383,7 +395,146 @@ app.get("/api/projects/:id/tasks", async (req, res) => {
 app.post("/api/tasks", async (req, res) => {
     try {
         const { name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, belongs_to } = req.body;
-        const task = await Task.create({ name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, belongs_to });
+        let task;
+        if (recurrence) {
+            if (start_date == null) {
+                const currentDate = new Date();
+                task = await Task.create({ name, description, currentDate, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, belongs_to });
+            }
+            else {
+                task = await Task.create({ name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, belongs_to });
+            }
+            const createRecurringInstances = async (originalTask) => {
+                const { recurrence, recurrence_unit, start_date, due_date } = originalTask;
+
+                //Get a list of dates based on the reccurence unit and pattern
+                const recurrenceDates = () => {
+                    const dates = [];
+                    const currentDate = new Date(); // Get the current date
+                    const startDate = start_date ? new Date(start_date) : (due_date ? new Date(due_date) : currentDate);
+                    const dayOfWeekMapping = {
+                        "sunday": 0,
+                        "monday": 1,
+                        "tuesday": 2,
+                        "wednesday": 3,
+                        "thursday": 4,
+                        "friday": 5,
+                        "saturday": 6
+                    };
+                    // Split the recurrence units into an array
+                    const recurrenceUnitsArray = recurrence_unit ? recurrence_unit.split(',').map(unit => unit.trim().toLowerCase()) : ['sunday'];
+
+                    recurrenceUnitsArray.forEach(recurrence_unit => {
+                        const dayOfWeek = dayOfWeekMapping[recurrence_unit];
+                        switch (recurrence) {
+                            case "daily": {
+                                const numberOfDays = 365; // Number of days to generate instances for (adjust as needed)
+
+                                for (let i = 0; i < numberOfDays; i++) {
+                                    const instanceDate = new Date(currentDate);
+                                    instanceDate.setDate(instanceDate.getDate() + i);
+                                    dates.push(instanceDate);
+                                }
+                                break;
+                            }
+                            case "monthly": {
+                                const numberOfMonths = 12; // Number of months to generate instances for (adjust as needed)
+
+                                for (let i = 0; i < numberOfMonths; i++) {
+                                    const instanceDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, startDate.getDate());
+                                    dates.push(instanceDate);
+                                }
+                                break;
+                            }
+                            case "monthly last day": {
+                                const numberOfMonths = 12; // Number of months to generate instances for (adjust as needed)
+
+                                for (let i = 0; i < numberOfMonths; i++) {
+                                    const nextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + i + 1, 1);
+                                    const lastDay = new Date(nextMonth - 1);
+                                    dates.push(lastDay);
+                                }
+                                break;
+                            }
+                            case "monthly first day of week": {
+                                const numberOfMonths = 12; // Number of months to generate instances for (adjust as needed)
+
+                                for (let i = 0; i < numberOfMonths; i++) {
+                                    const instanceDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, 1);
+                                    // Find the first occurrence of the specified day of the week in the month
+                                    while (instanceDate.getDay() !== dayOfWeek) {
+                                        instanceDate.setDate(instanceDate.getDate() + 1);
+                                    }
+                                    dates.push(instanceDate);
+                                }
+                                break;
+                            }
+                            case "monthly last day of week": {
+                                const numberOfMonths = 12; // Number of months to generate instances for (adjust as needed)
+
+                                for (let i = 0; i < numberOfMonths; i++) {
+                                    const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + i + 1, 0);
+                                    // Find the last occurrence of the specified day of the week in the month
+                                    while (lastDayOfMonth.getDay() !== dayOfWeek) {
+                                        lastDayOfMonth.setDate(lastDayOfMonth.getDate() - 1);
+                                    }
+                                    dates.push(lastDayOfMonth);
+                                }
+                                break;
+                            }
+                            case "weekly": {
+                                const numberOfWeeks = 52; // Number of weeks to generate instances for (adjust as needed)
+
+                                for (let i = 0; i < numberOfWeeks; i++) {
+                                    const instanceDate = new Date(startDate);
+                                    instanceDate.setDate(instanceDate.getDate() + i * 7); // Add i weeks
+                                    // Find the specified day of the week in the week
+                                    while (instanceDate.getDay() !== dayOfWeek) {
+                                        instanceDate.setDate(instanceDate.getDate() + 1);
+                                    }
+                                    dates.push(instanceDate);
+                                }
+                                break;
+                            }
+                            case "yearly": {
+                                const numberOfYears = 5; // Number of years to generate instances for (adjust as needed)
+
+                                for (let i = 0; i < numberOfYears; i++) {
+                                    const instanceDate = new Date(currentDate.getFullYear() + i, startDate.getMonth(), startDate.getDate());
+                                    dates.push(instanceDate);
+                                }
+                                break;
+                            }
+                            default:
+                                console.error("Shouldn't be possible.")
+                                break;
+                        }
+                    });
+                    return dates;
+                };
+
+                const dates = recurrenceDates();
+
+                //Create tasks with the original task id and the list of due dates
+                if (dates.length > 0) {
+                    dates.forEach(async (item) => {
+                        const newInstance = {
+                            ...originalTask.toJSON(),
+                            id: null,
+                            start_date: item,
+                            due_date: originalTask.due_date,
+                            original_task_id: originalTask.id,
+                        };
+
+                        await Task.create(newInstance);
+                    });
+                }
+            };
+
+            await createRecurringInstances(task);
+        } else {
+            task = await Task.create({ name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, belongs_to });
+        }
         res.status(201).json(task);
     } catch (error) {
         console.error(error);
@@ -401,6 +552,7 @@ app.put("/api/tasks/:id", async (req, res) => {
         }
 
         const updatedTask = await task.update(req.body);
+        await Task.update(req.body, { where: { original_task_id: req.params.id } });
         res.json(updatedTask);
     } catch (error) {
         console.error(error);
@@ -412,12 +564,16 @@ app.put("/api/tasks/:id", async (req, res) => {
 app.delete("/api/tasks/:id", async (req, res) => {
     try {
         const task = await Task.findOne({ where: { id: req.params.id } });
+        const recurrenceTasks = await Task.findAll({ where: { original_task_id: req.params.id } });
         if (!task) {
             return res.status(404).json({ error: "Task not found" });
         }
         await task.destroy();
-        res.sendStatus(204);
 
+        for (const task in recurrenceTasks) {
+            await task.destroy();
+        }
+        res.sendStatus(204);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
@@ -428,3 +584,5 @@ app.delete("/api/tasks/:id", async (req, res) => {
 app.listen(port, () => {
     console.log(`Leo API listening on port ${port}`);
 });
+
+await bree.start();
