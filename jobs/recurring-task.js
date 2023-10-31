@@ -11,7 +11,8 @@ function calculateNextDueDate(recurringTask) {
     // Calculate next due date based on recurrence pattern and start_date
     switch (recurrence) {
         case "daily":
-            return new Date(start_date.getTime() + timeDifference + 24 * 60 * 60 * 1000);
+            const nextDay = new Date(start_date.getTime() + 24 * 60 * 60 * 1000);
+            return nextDay;
 
         case "weekly":
             return new Date(start_date.getTime() + timeDifference + 7 * 24 * 60 * 60 * 1000);
