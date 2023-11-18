@@ -31,6 +31,11 @@ const Resource = sequelize.define("sb_resources", {
             key: "id",
         },
     },
+    is_archived: {
+        type: DataTypes.TINYINT,
+        allowNull: false,
+        defaultValue: 0,
+    },
     belongs_to: {
         type: DataTypes.STRING(50),
         allowNull: false
