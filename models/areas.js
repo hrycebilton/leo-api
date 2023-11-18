@@ -30,6 +30,11 @@ const Area = sequelize.define("sb_areas", {
         type: DataTypes.TINYINT,
         defaultValue: 0,
     },
+    is_archived: {
+        type: DataTypes.TINYINT,
+        allowNull: false,
+        defaultValue: 0,
+    },
     belongs_to: {
         type: DataTypes.STRING(50),
         allowNull: false

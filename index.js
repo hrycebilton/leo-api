@@ -54,14 +54,14 @@ app.post("/api/areas", async (req, res) => {
     }
 });
 
-//Define a GET route to retrieve a specific area
-app.get("/api/areas/:id", async (req, res) => {
+//Define a GET route to retrieve archived areas
+app.get("/api/archived/areas", async (req, res) => {
     try {
-        const area = await Area.findOne({ where: { id: req.params.id } });
-        if (!area) {
-            return res.status(404).json({ error: "Area not found" });
+        const areas = await Area.findAll({ where: { is_archived: true } });
+        if (!areas) {
+            return res.status(404).json({ error: "Areas not found" });
         }
-        res.json(area);
+        res.json(areas);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
@@ -143,6 +143,20 @@ app.get("/api/areas/:areaId/goals", async (req, res) => {
     }
 });
 
+//Define a GET route to retrieve archived projects
+app.get("/api/archived/goals", async (req, res) => {
+    try {
+        const goals = await Goal.findAll({ where: { is_archived: true } });
+        if (!goals) {
+            return res.status(404).json({ error: "Goals not found" });
+        }
+        res.json(goals);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 //Define a DELETE route to remove a specific goal
 app.delete("/api/goals/:id", async (req, res) => {
     try {
@@ -200,6 +214,20 @@ app.get("/api/projects/:projectId/notes", async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal server error");
+    }
+});
+
+//Define a GET route to retrieve archived projects
+app.get("/api/archived/notes", async (req, res) => {
+    try {
+        const notes = await Note.findAll({ where: { is_archived: true } });
+        if (!notes) {
+            return res.status(404).json({ error: "Notes not found" });
+        }
+        res.json(notes);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 
@@ -269,6 +297,20 @@ app.get("/api/projects/:id", async (req, res) => {
             return res.status(404).json({ error: "Project not found" });
         }
         res.json(project);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+//Define a GET route to retrieve archived projects
+app.get("/api/archived/projects", async (req, res) => {
+    try {
+        const projects = await Project.findAll({ where: { is_archived: true } });
+        if (!projects) {
+            return res.status(404).json({ error: "Projects not found" });
+        }
+        res.json(projects);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
@@ -349,6 +391,20 @@ app.get("/api/areas/:areaId/resources", async (req, res) => {
     }
 });
 
+//Define a GET route to retrieve archived projects
+app.get("/api/archived/resources", async (req, res) => {
+    try {
+        const resources = await Resource.findAll({ where: { is_archived: true } });
+        if (!resources) {
+            return res.status(404).json({ error: "Resources not found" });
+        }
+        res.json(resources);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 // Define a POST route to create a new area
 app.post("/api/resources", async (req, res) => {
     try {
@@ -388,6 +444,20 @@ app.get("/api/projects/:id/tasks", async (req, res) => {
     catch (error) {
         console.error(error);
         res.status(500).send("Internal server error");
+    }
+});
+
+//Define a GET route to retrieve archived tasks
+app.get("/api/archived/tasks", async (req, res) => {
+    try {
+        const tasks = await Task.findAll({ where: { is_archived: true } });
+        if (!tasks) {
+            return res.status(404).json({ error: "Tasks not found" });
+        }
+        res.json(tasks);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 
