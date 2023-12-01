@@ -54,6 +54,20 @@ app.post("/api/areas", async (req, res) => {
     }
 });
 
+//Define a GET route to retrieve a specific area
+app.get("/api/areas/:id", async (req, res) => {
+    try {
+        const area = await Area.findOne({ where: { id: req.params.id } });
+        if (!area) {
+            return res.status(404).json({ error: "Area not found" });
+        }
+        res.json(area);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 //Define a GET route to retrieve archived areas
 app.get("/api/archived/areas", async (req, res) => {
     try {
@@ -151,6 +165,23 @@ app.get("/api/archived/goals", async (req, res) => {
             return res.status(404).json({ error: "Goals not found" });
         }
         res.json(goals);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+//Define a PUT route to update a specific goal
+app.put("/api/goals/:id", async (req, res) => {
+    try {
+        const goal = await Goal.findOne({ where: { id: req.params.id } });
+
+        if (!goal) {
+            return res.status(404).json({ error: "Goal not found" });
+        }
+
+        const updatedGoal = await goal.update(req.body);
+        res.json(updatedGoal);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
@@ -399,6 +430,23 @@ app.get("/api/archived/resources", async (req, res) => {
             return res.status(404).json({ error: "Resources not found" });
         }
         res.json(resources);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+//Define a PUT route to update a specific resource
+app.put("/api/resources/:id", async (req, res) => {
+    try {
+        const resource = await Resource.findOne({ where: { id: req.params.id } });
+
+        if (!resource) {
+            return res.status(404).json({ error: "Resource not found" });
+        }
+
+        const updatedResource = await resource.update(req.body);
+        res.json(updatedResource);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
