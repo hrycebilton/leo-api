@@ -238,8 +238,23 @@ app.get("/api/projects/:projectId/notes", async (req, res) => {
     try {
         const projectId = req.params.projectId;
 
-        // Query the notes based on the specified area ID
+        // Query the notes based on the specified project ID
         const notes = await Note.findAll({ where: { project_id: projectId } });
+
+        res.json(notes);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
+    }
+});
+
+// Define a GET route to retrieve all notes within a specific resource
+app.get("/api/resources/:resourceId/notes", async (req, res) => {
+    try {
+        const resourceId = req.params.resourceId;
+
+        // Query the notes based on the specified resource ID
+        const notes = await Note.findAll({ where: { resource_id: resourceId } });
 
         res.json(notes);
     } catch (error) {
@@ -285,6 +300,24 @@ app.put("/api/notes/:id", async (req, res) => {
 
         const updatedNote = await note.update(req.body);
         res.json(updatedNote);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+//Define a DELETE route to remove a specific note
+app.delete("/api/notes/:id", async (req, res) => {
+    try {
+        const note = await Note.findOne({ where: { id: req.params.id } });
+
+        if (!note) {
+            return res.status(404).json({ error: "Note not found" });
+        }
+
+        await note.destroy();
+        res.sendStatus(204);
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
@@ -404,6 +437,20 @@ app.get("/api/resources", async (req, res) => {
     catch (error) {
         console.error(error);
         res.status(500).send("Internal server error");
+    }
+});
+
+//Define a GET route to retrieve a specific resource
+app.get("/api/resources/:id", async (req, res) => {
+    try {
+        const resource = await Resource.findOne({ where: { id: req.params.id } });
+        if (!resource) {
+            return res.status(404).json({ error: "Resource not found" });
+        }
+        res.json(resource);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 
