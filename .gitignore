@@ -16,4 +16,5 @@ yarn.lock
 .DS_Store
 Thumbs.db
 serviceAccount.json
-database.js
+run.bat
+run.bat.bak

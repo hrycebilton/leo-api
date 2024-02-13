@@ -1,5 +1,6 @@
 import Bree from "bree";
 import cors from "cors";
+import 'dotenv/config'
 import express from "express";
 import sequelize from "./database.js"; //required
 import Area from "./models/areas.js";
