@@ -1,13 +1,11 @@
-# Productivity App Backend API
+# Leo API
 
-This is the backend API for the Electron/React productivity app. It provides endpoints for managing tasks, projects, and other productivity-related data.
+This is the backend API for my Electron app Leo. It provides endpoints for managing tasks, projects, and other productivity-related data.
 
 ## Table of Contents
 
 - [Endpoints](#endpoints)
 - [Authentication](#authentication)
-- [Error Handling](#error-handling)
-- [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
 
