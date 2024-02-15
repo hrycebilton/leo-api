@@ -78,6 +78,14 @@ const Task = sequelize.define("sb_task", {
             key: "id"
         }
     },
+    area_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: "sb_areas",
+            key: "id"
+        }
+    },
     original_task_id: {
         type: DataTypes.INTEGER,
         allowNull: true,

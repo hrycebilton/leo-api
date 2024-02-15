@@ -560,20 +560,20 @@ app.get("/api/archived/tasks", async (req, res) => {
 // Define a POST route to create a new task
 app.post("/api/tasks", async (req, res) => {
     try {
-        const { name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, belongs_to } = req.body;
+        const { name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, area_id, belongs_to } = req.body;
         let task;
         if (recurrence) {
             if (start_date == null) {
                 const currentDate = new Date();
-                task = await Task.create({ name, description, currentDate, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, belongs_to });
+                task = await Task.create({ name, description, currentDate, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id,  area_id, belongs_to });
             }
             else {
-                task = await Task.create({ name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, belongs_to });
+                task = await Task.create({ name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id,  area_id, belongs_to });
             }
             const createRecurringInstances = async (originalTask) => {
                 const { recurrence, recurrence_unit, start_date, due_date } = originalTask;
 
-                //Get a list of dates based on the reccurence unit and pattern
+                //Get a list of dates based on the recurrence unit and pattern
                 const recurrenceDates = () => {
                     const dates = [];
                     const currentDate = new Date(); // Get the current date
@@ -786,7 +786,7 @@ app.post("/api/tasks", async (req, res) => {
 
             await createRecurringInstances(task);
         } else {
-            task = await Task.create({ name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, belongs_to });
+            task = await Task.create({ name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, area_id, belongs_to });
         }
         res.status(201).json(task);
     } catch (error) {
