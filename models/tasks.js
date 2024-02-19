@@ -32,7 +32,7 @@ const Task = sequelize.define("sb_task", {
     },
     priority: {
         type: DataTypes.ENUM("low", "medium", "high"),
-        allowNull: true,
+        allowNull: false,
     },
     recurrence: {
         type: DataTypes.ENUM(

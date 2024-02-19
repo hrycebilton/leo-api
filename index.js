@@ -10,6 +10,7 @@ import Project from "./models/projects.js";
 import Resource from "./models/resources.js";
 import Task from "./models/tasks.js"
 import Middleware from "./middleware/firebase/index.js";
+import { createRecurringInstances } from "./recurrence-helper.js";
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -515,6 +516,7 @@ app.post("/api/resources", async (req, res) => {
 //#endregion
 
 //#region Tasks
+
 // Define a GET route to retrieve all tasks
 app.get("/api/tasks", async (req, res) => {
     try {
@@ -562,232 +564,23 @@ app.post("/api/tasks", async (req, res) => {
     try {
         const { name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, area_id, belongs_to } = req.body;
         let task;
+        
         if (recurrence) {
-            if (start_date == null) {
+            // Debating if this is even needed
+            if (!due_date == due_date == '') {
                 const currentDate = new Date();
-                task = await Task.create({ name, description, currentDate, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id,  area_id, belongs_to });
+                currentDate.setHours(0, 0, 0, 0);
+                const due_date = currentDate.toISOString();
+                task = await Task.create({ name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, area_id, belongs_to });
+            } else {
+                task = await Task.create({ name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, area_id, belongs_to });
             }
-            else {
-                task = await Task.create({ name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id,  area_id, belongs_to });
-            }
-            const createRecurringInstances = async (originalTask) => {
-                const { recurrence, recurrence_unit, start_date, due_date } = originalTask;
 
-                //Get a list of dates based on the recurrence unit and pattern
-                const recurrenceDates = () => {
-                    const dates = [];
-                    const currentDate = new Date(); // Get the current date
-                    const startDate = start_date ? new Date(start_date) : (due_date ? new Date(due_date) : currentDate);
-                    const dayOfWeekMapping = {
-                        "sunday": 0,
-                        "monday": 1,
-                        "tuesday": 2,
-                        "wednesday": 3,
-                        "thursday": 4,
-                        "friday": 5,
-                        "saturday": 6
-                    };
-                    // Split the recurrence units into an array
-                    const recurrenceUnitsArray = recurrence_unit ? recurrence_unit.split(',').map(unit => unit.trim().toLowerCase()) : ['sunday'];
-
-                    if (recurrence == "weekly" || recurrence == "monthly last day" || recurrence == "monthly first day of week" || recurrence == "monthly last day of week") {
-                        recurrenceUnitsArray.forEach(recurrence_unit => {
-                            const dayOfWeek = dayOfWeekMapping[recurrence_unit];
-                            switch (recurrence) {
-                                case "daily": {
-                                    const numberOfDays = 365; // Number of days to generate instances for (adjust as needed)
-
-                                    for (let i = 0; i < numberOfDays; i++) {
-                                        const instanceDate = new Date(currentDate);
-                                        instanceDate.setDate(instanceDate.getDate() + i);
-                                        dates.push(instanceDate);
-                                    }
-                                    break;
-                                }
-                                case "monthly": {
-                                    const numberOfMonths = 12; // Number of months to generate instances for (adjust as needed)
-
-                                    for (let i = 0; i < numberOfMonths; i++) {
-                                        const instanceDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, startDate.getDate());
-                                        dates.push(instanceDate);
-                                    }
-                                    break;
-                                }
-                                case "monthly last day": {
-                                    const numberOfMonths = 12; // Number of months to generate instances for (adjust as needed)
-
-                                    for (let i = 0; i < numberOfMonths; i++) {
-                                        const nextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + i + 1, 1);
-                                        const lastDay = new Date(nextMonth - 1);
-                                        dates.push(lastDay);
-                                    }
-                                    break;
-                                }
-                                case "monthly first day of week": {
-                                    const numberOfMonths = 12; // Number of months to generate instances for (adjust as needed)
-
-                                    for (let i = 0; i < numberOfMonths; i++) {
-                                        const instanceDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, 1);
-                                        // Find the first occurrence of the specified day of the week in the month
-                                        while (instanceDate.getDay() !== dayOfWeek) {
-                                            instanceDate.setDate(instanceDate.getDate() + 1);
-                                        }
-                                        dates.push(instanceDate);
-                                    }
-                                    break;
-                                }
-                                case "monthly last day of week": {
-                                    const numberOfMonths = 12; // Number of months to generate instances for (adjust as needed)
-
-                                    for (let i = 0; i < numberOfMonths; i++) {
-                                        const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + i + 1, 0);
-                                        // Find the last occurrence of the specified day of the week in the month
-                                        while (lastDayOfMonth.getDay() !== dayOfWeek) {
-                                            lastDayOfMonth.setDate(lastDayOfMonth.getDate() - 1);
-                                        }
-                                        dates.push(lastDayOfMonth);
-                                    }
-                                    break;
-                                }
-                                case "weekly": {
-                                    const numberOfWeeks = 52; // Number of weeks to generate instances for (adjust as needed)
-
-                                    for (let i = 0; i < numberOfWeeks; i++) {
-                                        const instanceDate = new Date(startDate);
-                                        instanceDate.setDate(instanceDate.getDate() + i * 7); // Add i weeks
-                                        // Find the specified day of the week in the week
-                                        while (instanceDate.getDay() !== dayOfWeek) {
-                                            instanceDate.setDate(instanceDate.getDate() + 1);
-                                        }
-                                        dates.push(instanceDate);
-                                    }
-                                    break;
-                                }
-                                case "yearly": {
-                                    const numberOfYears = 5; // Number of years to generate instances for (adjust as needed)
-
-                                    for (let i = 0; i < numberOfYears; i++) {
-                                        const instanceDate = new Date(currentDate.getFullYear() + i, startDate.getMonth(), startDate.getDate());
-                                        dates.push(instanceDate);
-                                    }
-                                    break;
-                                }
-                                default:
-                                    console.error("Shouldn't be possible.")
-                                    break;
-                            }
-                        });
-                    } else {
-                        switch (recurrence) {
-                            case "daily": {
-                                const numberOfDays = 365; // Number of days to generate instances for (adjust as needed)
-
-                                for (let i = 0; i < numberOfDays; i++) {
-                                    const instanceDate = new Date(currentDate);
-                                    instanceDate.setDate(instanceDate.getDate() + i);
-                                    dates.push(instanceDate);
-                                }
-                                break;
-                            }
-                            case "monthly": {
-                                const numberOfMonths = 12; // Number of months to generate instances for (adjust as needed)
-
-                                for (let i = 0; i < numberOfMonths; i++) {
-                                    const instanceDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, startDate.getDate());
-                                    dates.push(instanceDate);
-                                }
-                                break;
-                            }
-                            case "monthly last day": {
-                                const numberOfMonths = 12; // Number of months to generate instances for (adjust as needed)
-
-                                for (let i = 0; i < numberOfMonths; i++) {
-                                    const nextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + i + 1, 1);
-                                    const lastDay = new Date(nextMonth - 1);
-                                    dates.push(lastDay);
-                                }
-                                break;
-                            }
-                            case "monthly first day of week": {
-                                const numberOfMonths = 12; // Number of months to generate instances for (adjust as needed)
-
-                                for (let i = 0; i < numberOfMonths; i++) {
-                                    const instanceDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, 1);
-                                    // Find the first occurrence of the specified day of the week in the month
-                                    while (instanceDate.getDay() !== dayOfWeek) {
-                                        instanceDate.setDate(instanceDate.getDate() + 1);
-                                    }
-                                    dates.push(instanceDate);
-                                }
-                                break;
-                            }
-                            case "monthly last day of week": {
-                                const numberOfMonths = 12; // Number of months to generate instances for (adjust as needed)
-
-                                for (let i = 0; i < numberOfMonths; i++) {
-                                    const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + i + 1, 0);
-                                    // Find the last occurrence of the specified day of the week in the month
-                                    while (lastDayOfMonth.getDay() !== dayOfWeek) {
-                                        lastDayOfMonth.setDate(lastDayOfMonth.getDate() - 1);
-                                    }
-                                    dates.push(lastDayOfMonth);
-                                }
-                                break;
-                            }
-                            case "weekly": {
-                                const numberOfWeeks = 52; // Number of weeks to generate instances for (adjust as needed)
-
-                                for (let i = 0; i < numberOfWeeks; i++) {
-                                    const instanceDate = new Date(startDate);
-                                    instanceDate.setDate(instanceDate.getDate() + i * 7); // Add i weeks
-                                    // Find the specified day of the week in the week
-                                    while (instanceDate.getDay() !== dayOfWeek) {
-                                        instanceDate.setDate(instanceDate.getDate() + 1);
-                                    }
-                                    dates.push(instanceDate);
-                                }
-                                break;
-                            }
-                            case "yearly": {
-                                const numberOfYears = 5; // Number of years to generate instances for (adjust as needed)
-
-                                for (let i = 0; i < numberOfYears; i++) {
-                                    const instanceDate = new Date(currentDate.getFullYear() + i, startDate.getMonth(), startDate.getDate());
-                                    dates.push(instanceDate);
-                                }
-                                break;
-                            }
-                            default:
-                                console.error("Shouldn't be possible.")
-                                break;
-                        }
-                    }
-
-                    return dates;
-                };
-
-                const dates = recurrenceDates();
-
-                //Create tasks with the original task id and the list of due dates
-                if (dates.length > 0) {
-                    dates.forEach(async (item) => {
-                        const newInstance = {
-                            ...originalTask.toJSON(),
-                            id: null,
-                            start_date: item,
-                            due_date: originalTask.due_date,
-                            original_task_id: originalTask.id,
-                        };
-
-                        await Task.create(newInstance);
-                    });
-                }
-            };
-
-            await createRecurringInstances(task);
+            await createRecurringInstances(task.dataValues);
         } else {
-            task = await Task.create({ name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, area_id, belongs_to });
+            task = await Task.create({ name, description, start_date, currentDate, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, area_id, belongs_to });
         }
+
         res.status(201).json(task);
     } catch (error) {
         console.error(error);
@@ -805,7 +598,36 @@ app.put("/api/tasks/:id", async (req, res) => {
         }
 
         const updatedTask = await task.update(req.body);
-        await Task.update(req.body, { where: { original_task_id: req.params.id } });
+
+        /* TODO (recurrence task editing) 
+        * get the most recent upcoming recurring task
+        * chop off all other instances
+        * regen new instances based on the new pattern */
+
+        //check if recurrence
+        if (updatedTask.dataValues.recurrence) {
+            const recurrenceTasks = await Task.findAll({ where: { original_task_id: req.params.id } });
+
+            //create recurrence instances if none exist
+            if (recurrenceTasks.length == 0) {
+                await createRecurringInstances(updatedTask);
+            }
+
+            recurrenceTasks.forEach(async task => {
+                const newInstance = {
+                    ...task.toJSON(),
+                    name: updatedTask.dataValues.name,
+                    description: updatedTask.dataValues.description,
+                    priority: updatedTask.dataValues.priority,
+                    project_id: updatedTask.dataValues.project_id,
+                    goal_id: updatedTask.dataValues.goal_id,
+                    area_id: updatedTask.dataValues.area_id,
+                };
+
+                await task.update(newInstance);
+            })
+        }
+
         res.json(updatedTask);
     } catch (error) {
         console.error(error);
