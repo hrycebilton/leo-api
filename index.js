@@ -10,7 +10,7 @@ import Project from "./models/projects.js";
 import Resource from "./models/resources.js";
 import Task from "./models/tasks.js"
 import Middleware from "./middleware/firebase/index.js";
-import { createRecurringInstances } from "./recurrence-helper.js";
+import { handleRecurrenceTask } from "./recurrence-helper.js";
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -566,19 +566,10 @@ app.post("/api/tasks", async (req, res) => {
         let task;
         
         if (recurrence) {
-            // Debating if this is even needed
-            if (!due_date == due_date == '') {
-                const currentDate = new Date();
-                currentDate.setHours(0, 0, 0, 0);
-                const due_date = currentDate.toISOString();
-                task = await Task.create({ name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, area_id, belongs_to });
-            } else {
-                task = await Task.create({ name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, area_id, belongs_to });
-            }
-
-            await createRecurringInstances(task.dataValues);
+            const originalTask = { name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, area_id, belongs_to };
+            task = await handleRecurrenceTask(originalTask, false);
         } else {
-            task = await Task.create({ name, description, start_date, currentDate, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, area_id, belongs_to });
+            task = await Task.create({ name, description, start_date, due_date, priority, recurrence, recurrence_unit, is_finished, project_id, goal_id, area_id, belongs_to });
         }
 
         res.status(201).json(task);
@@ -610,7 +601,7 @@ app.put("/api/tasks/:id", async (req, res) => {
 
             //create recurrence instances if none exist
             if (recurrenceTasks.length == 0) {
-                await createRecurringInstances(updatedTask);
+                await handleRecurrenceTask(updatedTask, false);
             }
 
             recurrenceTasks.forEach(async task => {

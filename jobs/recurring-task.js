@@ -1,6 +1,6 @@
 import { Sequelize, Op } from "sequelize";
 import Task from "../models/tasks.js";
-import { createRecurringInstances, getDatesBasedOnRecurrence } from "../recurrence-helper.js";
+import { handleRecurrenceTask } from "../recurrence-helper.js";
 
 function getDayBeforeDate(date) {
     const dayBefore = new Date(date);
@@ -41,39 +41,20 @@ try {
         });
         mostRecentInstances.push(mostRecentInstance);
     }
-    //Create task instances
-    if (mostRecentInstances) {
-        for (const item of mostRecentInstances) {
-            const nextDueDate = getDatesBasedOnRecurrence(item.due_date, item.recurrence, item.recurrence_unit, 1)[0];
 
-            const dayBeforeNextDueDate = getDayBeforeDate(nextDueDate);
+    //Create task instances
+    if (mostRecentInstances.length > 0) {
+        for (const instance of mostRecentInstances) {
+            const dayBeforeNextDueDate = getDayBeforeDate(new Date(instance.due_date));
             const currentDate = new Date();
-            
-            // Check if the next due date is today
+            // Check if the day before the next due date is today
             if (currentDate.toDateString() == dayBeforeNextDueDate.toDateString()) {
                 // Create new instances with the next due dates
-                const instance = {
-                    id: null,
-                    name: item.name,
-                    description: item.description,
-                    start_date: null,
-                    due_date: nextDueDate,
-                    creation_date: new Date().toISOString(),
-                    priority: item.priority,
-                    recurrence: item.recurrence,
-                    recurrence_unit: item.recurrence_unit,
-                    project_id: item.project_id,
-                    goal_id: item.goal_id,
-                    area_id: item.area_id,
-                    original_task_id: item.original_task_id,
-                    belongs_to: item.belongs_to
-                };
-                
-                await createRecurringInstances(instance);
+                await handleRecurrenceTask(instance.dataValues, true);
                 console.log('Recurring tasks created');
             }
         };
     }
 } catch (error) {
-    console.error('Error creating recurring task:', error);
+    console.error('Error creating recurring tasks:', error);
 }
