@@ -2,6 +2,7 @@ import Bree from "bree";
 import cors from "cors";
 import 'dotenv/config'
 import express from "express";
+import { Op } from "sequelize";
 import sequelize from "./database.js"; //required
 import Area from "./models/areas.js";
 import Goal from "./models/goals.js";
@@ -529,13 +530,42 @@ app.get("/api/tasks", async (req, res) => {
     }
 });
 
+// Define a GET route to retrieve all tasks within a area
+app.get("/api/areas/:id/tasks", async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        // Get today's date
+        const today = new Date();
+        today.setUTCHours(0, 0, 0, 0); // Set time to the beginning of the day in UTC
+        
+        // Retrieve tasks associated with the specified area ID that are due today
+        const tasks = await Task.findAll({
+            where: {
+                area_id: id,
+                due_date: {
+                    [Op.gte]: today, // Tasks due today or in the future
+                    [Op.lt]: new Date(today.getTime() + 24 * 60 * 60 * 1000) // Tasks before tomorrow
+                }
+            }
+        });
+
+        res.json(tasks);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
+    }
+});
+
+
 // Define a GET route to retrieve all tasks within a project
 app.get("/api/projects/:id/tasks", async (req, res) => {
     try {
         const id = req.params.id;
 
         // Retrieve tasks associated with the specified project ID
-        const tasks = await Task.findAll({ where: { id } });
+        const tasks = await Task.findAll({ where: { project_id: id } });
 
         res.json(tasks);
     }
