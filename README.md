@@ -61,6 +61,7 @@ This is the backend API for my Electron app Leo. It provides endpoints for manag
 ### Tasks
 
 - `GET /api/tasks`: Retrieve all tasks.
+- `GET /api/areas/:id/tasks`: Retrieve all tasks within a area.
 - `GET /api/projects/:id/tasks`: Retrieve all tasks within a project.
 - `GET /api/archived/tasks`: Retrieve archived tasks.
 - `POST /api/tasks`: Create a new task.
