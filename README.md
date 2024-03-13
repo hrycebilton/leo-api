@@ -84,7 +84,7 @@ This API uses Firebase Authentication tokens for authorization.
 
 ## Contributing
 
-Contributions are welcome! If you find a bug or want to add a new feature, feel free to open an issue or submit a pull request.
+Contributions are welcome! If you find a bug feel free to open an issue or submit a pull request.
 
 ## License
 
