@@ -486,6 +486,18 @@ app.get("/api/archived/resources", async (req, res) => {
     }
 });
 
+// Define a POST route to create a new resource
+app.post("/api/resources", async (req, res) => {
+    try {
+        const { name, description, image, area_id, belongs_to } = req.body;
+        const resource = await Resource.create({ name, description, image, area_id, belongs_to });
+        res.status(201).json(resource);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
+    }
+});
+
 //Define a PUT route to update a specific resource
 app.put("/api/resources/:id", async (req, res) => {
     try {
@@ -503,15 +515,18 @@ app.put("/api/resources/:id", async (req, res) => {
     }
 });
 
-// Define a POST route to create a new area
-app.post("/api/resources", async (req, res) => {
+//Define a DELETE route to remove a specific resource
+app.delete("/api/resources/:id", async (req, res) => {
     try {
-        const { name, description, image, area_id, belongs_to } = req.body;
-        const resource = await Resource.create({ name, description, image, area_id, belongs_to });
-        res.status(201).json(resource);
+        const resource = await Resource.findOne({ where: { id: req.params.id } });
+        if (!resource) {
+            return res.status(404).json({ error: "Task not found" });
+        }
+        await resource.destroy();
+        res.sendStatus(204);
     } catch (error) {
         console.error(error);
-        res.status(500).send("Internal server error");
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 //#endregion

@@ -4,10 +4,18 @@ This is the backend API for my Electron app Leo. It provides endpoints for manag
 
 ## Table of Contents
 
-- [Endpoints](#endpoints)
-- [Authentication](#authentication)
-- [Contributing](#contributing)
-- [License](#license)
+- [Leo API](#leo-api)
+  - [Table of Contents](#table-of-contents)
+  - [Endpoints](#endpoints)
+    - [Areas](#areas)
+    - [Goals](#goals)
+    - [Notes](#notes)
+    - [Projects](#projects)
+    - [Resources](#resources)
+    - [Tasks](#tasks)
+  - [Authentication](#authentication)
+  - [Contributing](#contributing)
+  - [License](#license)
 
 ## Endpoints
 
@@ -55,8 +63,9 @@ This is the backend API for my Electron app Leo. It provides endpoints for manag
 - `GET /api/resources/:id`: Retrieve a specific resource.
 - `GET /api/areas/:areaId/resources`: Retrieve all resources within a specific area.
 - `GET /api/archived/resources`: Retrieve archived resources.
-- `PUT /api/resources/:id`: Update a specific resource.
 - `POST /api/resources`: Create a new resource.
+- `PUT /api/resources/:id`: Update a specific resource.
+- `DELETE /api/tasks/:id`: Delete a resource by ID.
   
 ### Tasks
 
